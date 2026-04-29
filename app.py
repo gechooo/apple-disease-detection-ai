@@ -2,14 +2,20 @@ import gradio as gr
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import json
 
-from google.colab import drive
-drive.mount('/content/drive')
-# Load trained model (must be in same folder)
+
+# Load model
 model = tf.keras.models.load_model("apple_model_checkpoint.keras")
 
-# Class labels (must match training order)
-classes = ["Apple Scab", "Black Rot", "Cedar Apple Rust", "Healthy"]
+# Load class indices
+with open("class_indices.json", "r") as f:
+    class_indices = json.load(f)
+
+# Convert to correct order
+classes = [None] * len(class_indices)
+for label, index in class_indices.items():
+    classes[index] = label
 
 def predict_image(img):
     img = img.resize((224, 224))
@@ -25,6 +31,6 @@ def predict_image(img):
 gr.Interface(
     fn=predict_image,
     inputs=gr.Image(type="pil"),
-    outputs=gr.Textbox(),
+    outputs="text",
     title="🍎 Apple Disease Detection AI"
 ).launch()
