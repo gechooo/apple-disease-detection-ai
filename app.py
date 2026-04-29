@@ -3,6 +3,8 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 
+from google.colab import drive
+drive.mount('/content/drive')
 # Load trained model (must be in same folder)
 model = tf.keras.models.load_model("apple_model_checkpoint.keras")
 
