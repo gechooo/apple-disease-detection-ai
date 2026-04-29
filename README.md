@@ -1,9 +1,8 @@
 # 🍎 Apple Disease Detection AI
 
 ## 📌 Problem
-Identifying apple diseases early is difficult and requires expert knowledge. Farmers may misdiagnose or miss early symptoms.
 
----
+Apple diseases such as Scab, Rust, and Black Rot can significantly reduce crop yield. Farmers often struggle to identify diseases early without expert knowledge, leading to delayed treatment and economic loss.
 
 ## 💡 Solution
 This project uses a deep learning model (MobileNetV2) to classify apple leaf diseases and provide treatment recommendations through a simple interface.
@@ -20,18 +19,27 @@ This project uses a deep learning model (MobileNetV2) to classify apple leaf dis
 - Handles uncertain predictions
 - User-friendly interface using Gradio
 
----
+  
+## 🔄 How it Works
+1. Upload an apple leaf image  
+2. The model processes the image  
+3. Predicts the disease type  
+4. Displays treatment recommendations
+
+   
+## 🌿 Treatment Recommendation
+The system provides:
+- Modern scientific treatment methods  
+- Indigenous knowledge-based solutions  
 
 ## 🖼️ Demo
-
+### Healthy Prediction
 <img width="1094" height="453" alt="healthy leaf" src="https://github.com/user-attachments/assets/415946c1-fa67-402f-9a96-863b65041e7a" />
 
+### Disease Detection
 <img width="1094" height="450" alt="Scab" src="https://github.com/user-attachments/assets/052c7415-82f7-4b7d-9c3d-48b2fb4c4e36" />
-<img width="978" height="481" alt="Training" src="https://github.com/user-attachments/assets/07374498-9833-4172-946b-cc058825bf29" />
 
-
-## 🚀 How to Run
-
-```bash
-pip install -r requirements.txt
-python app.py
+## 👤 Author
+gechooo  
+Email: getnetbayuh2017@email.com  
+GitHub: https://github.com/gechooo
