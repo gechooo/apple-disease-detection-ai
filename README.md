@@ -30,7 +30,18 @@ This project uses a deep learning model (MobileNetV2) to classify apple leaf dis
 ## 🌿 Treatment Recommendation
 The system provides:
 - Modern scientific treatment methods  
-- Indigenous knowledge-based solutions  
+- Indigenous knowledge-based solutions
+  
+## 🚀 How to Run
+
+1. Clone the repo:
+   git clone https://github.com/gechooo/apple-disease-detection-ai.git
+
+2. Install dependencies:
+   pip install -r requirements.txt
+
+3. Run the app:
+   python app.py
 
 ## 🖼️ Demo
 ### Healthy Prediction
