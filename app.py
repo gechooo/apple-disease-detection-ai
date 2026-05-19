@@ -34,3 +34,4 @@ gr.Interface(
     outputs="text",
     title="🍎 Apple Disease Detection AI"
 ).launch()
+demo.launch(server_name="0.0.0.0", server_port=7860)
