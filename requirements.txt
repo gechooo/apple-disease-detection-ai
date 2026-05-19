@@ -1,4 +1,4 @@
-tensorflow==2.15.0
-gradio==4.44.1
+tensorflow
+gradio
 numpy
 pillow
