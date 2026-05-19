@@ -4,7 +4,7 @@ import keras
 import numpy as np
 from PIL import Image
 import json
-
+import os
 
 # Load model
 import tensorflow as tf
@@ -40,4 +40,10 @@ gr.Interface(
     outputs="text",
     title="🍎 Apple Disease Detection AI"
 ).launch()
-demo.launch(server_name="0.0.0.0", server_port=7860)
+
+
+# Read the port assigned by Render, or fallback to 7860 for local testing
+port = int(os.environ.get("PORT", 7860))
+
+demo.launch(server_name="0.0.0.0", server_port=port)
+
