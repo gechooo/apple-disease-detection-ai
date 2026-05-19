@@ -1,12 +1,18 @@
 import gradio as gr
 import tensorflow as tf
+import keras
 import numpy as np
 from PIL import Image
 import json
 
 
 # Load model
-model = tf.keras.models.load_model("apple_model_checkpoint.keras")
+import tensorflow as tf
+
+model = tf.keras.models.load_model(
+    "apple_model_checkpoint.keras",
+    compile=False
+)
 
 # Load class indices
 with open("class_indices.json", "r") as f:
