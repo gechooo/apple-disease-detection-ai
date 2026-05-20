@@ -10,7 +10,7 @@ import os
 import tensorflow as tf
 
 model = tf.keras.models.load_model(
-    "apple_model_checkpoint.keras",
+    "model_fixex.h5",
     compile=False
 )
 
