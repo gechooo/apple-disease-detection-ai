@@ -13,7 +13,7 @@ print("TensorFlow:", tf.__version__)
 print("Keras:", keras.__version__)
 
 model = tf.keras.models.load_model(
-    "model_fixed.h5",
+    "model_clean.keras",
     compile=False
 )
 
