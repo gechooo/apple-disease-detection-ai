@@ -4,7 +4,11 @@ import numpy as np
 import tensorflow as tf
 import gradio as gr
 from PIL import Image
+import os
 
+print("FILES IN DIRECTORY:")
+print(os.listdir("."))
+print("MODEL EXISTS:", os.path.exists("apple_model.keras"))
 # =========================
 # CONFIG
 # =========================
