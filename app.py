@@ -1,62 +1,108 @@
 import os
+import json
+import numpy as np
 import tensorflow as tf
+import gradio as gr
+from PIL import Image
 
 # =========================
-# 1. FORCE STABLE EXECUTION MODE
+# CONFIG
 # =========================
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
-# IMPORTANT: ensure consistent Keras behavior
-tf.keras.mixed_precision.set_global_policy("float32")
+IMG_SIZE = (224, 224)
 
+# =========================
+# LOAD CLASS LABELS
+# =========================
+with open("class_indices.json", "r") as f:
+    class_indices = json.load(f)
+
+# Convert:
+# {"black_rot":0,"healthy":1,"rust":2,"scab":3}
+# into:
+# {0:"black_rot",1:"healthy",2:"rust",3:"scab"}
+
+idx_to_class = {v: k for k, v in class_indices.items()}
+
+print("Loaded classes:", idx_to_class)
+
+# =========================
+# LOAD MODEL
+# =========================
 print("TensorFlow:", tf.__version__)
 print("Keras:", tf.keras.__version__)
 
-# =========================
-# 2. LOAD MODEL SAFELY
-# =========================
-MODEL_PATH = "apple_model.keras"  # or full path on Render
+MODEL_PATH = "apple_model.keras"
 
+model = tf.keras.models.load_model(
+    MODEL_PATH,
+    compile=False
+)
+
+print("✅ Model loaded successfully")
+
+# =========================
+# STARTUP TEST
+# =========================
 try:
-    model = tf.keras.models.load_model(
-        MODEL_PATH,
-        compile=False,  # VERY IMPORTANT FIX
-        safe_mode=False  # avoids strict config validation
-    )
-    print("✅ Model loaded successfully")
+    dummy = tf.random.normal((1, 224, 224, 3))
+    result = model.predict(dummy, verbose=0)
+
+    print("✅ Startup prediction successful")
+    print("Prediction shape:", result.shape)
 
 except Exception as e:
-    print("❌ Primary load failed:", e)
-
-    # =========================
-    # 3. FALLBACK LOADER (CRITICAL FOR KERAS 3 ISSUES)
-    # =========================
-    try:
-        model = tf.keras.models.load_model(
-            MODEL_PATH,
-            compile=False,
-            custom_objects={}
-        )
-        print("✅ Model loaded with fallback method")
-
-    except Exception as e2:
-        print("❌ Fatal model load error:", e2)
-        raise e2
-
+    print("❌ Startup prediction failed")
+    print(e)
+    raise e
 
 # =========================
-# 4. SIMPLE PREDICTION FUNCTION (SAFE)
+# PREDICTION FUNCTION
 # =========================
-from tensorflow.keras.preprocessing import image
-import numpy as np
+def predict(image):
 
-IMG_SIZE = (224, 224)
+    if image is None:
+        return {"No image uploaded": 1.0}
 
-def predict(img_path):
-    img = image.load_img(img_path, target_size=IMG_SIZE)
-    x = image.img_to_array(img)
-    x = np.expand_dims(x, axis=0)
-    x = x / 255.0
+    image = image.convert("RGB")
+    image = image.resize(IMG_SIZE)
 
-    preds = model.predict(x)
-    return preds
+    img_array = np.array(image).astype("float32") / 255.0
+
+    img_array = np.expand_dims(img_array, axis=0)
+
+    predictions = model.predict(
+        img_array,
+        verbose=0
+    )[0]
+
+    results = {
+        idx_to_class[i]: float(predictions[i])
+        for i in range(len(predictions))
+    }
+
+    return results
+
+# =========================
+# GRADIO INTERFACE
+# =========================
+demo = gr.Interface(
+    fn=predict,
+    inputs=gr.Image(type="pil"),
+    outputs=gr.Label(num_top_classes=4),
+    title="Apple Leaf Disease Classifier",
+    description="Upload an apple leaf image to classify the disease."
+)
+
+# =========================
+# LAUNCH
+# =========================
+if __name__ == "__main__":
+
+    port = int(os.environ.get("PORT", 7860))
+
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=port
+    )
