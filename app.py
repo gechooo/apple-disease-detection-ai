@@ -1,52 +1,62 @@
-import gradio as gr
-import tensorflow as tf
-import keras
-import numpy as np
-from PIL import Image
-import json
 import os
-
-# Load model
 import tensorflow as tf
+
+# =========================
+# 1. FORCE STABLE EXECUTION MODE
+# =========================
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+# IMPORTANT: ensure consistent Keras behavior
+tf.keras.mixed_precision.set_global_policy("float32")
 
 print("TensorFlow:", tf.__version__)
-print("Keras:", keras.__version__)
+print("Keras:", tf.keras.__version__)
 
-model = tf.keras.models.load_model(
-    "model_clean.keras",
-    compile=False
-)
+# =========================
+# 2. LOAD MODEL SAFELY
+# =========================
+MODEL_PATH = "apple_model.keras"  # or full path on Render
 
-# Load class indices
-with open("class_indices.json", "r") as f:
-    class_indices = json.load(f)
+try:
+    model = tf.keras.models.load_model(
+        MODEL_PATH,
+        compile=False,  # VERY IMPORTANT FIX
+        safe_mode=False  # avoids strict config validation
+    )
+    print("✅ Model loaded successfully")
 
-# Convert to correct order
-classes = [None] * len(class_indices)
-for label, index in class_indices.items():
-    classes[index] = label
+except Exception as e:
+    print("❌ Primary load failed:", e)
 
-def predict_image(img):
-    img = img.resize((224, 224))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
+    # =========================
+    # 3. FALLBACK LOADER (CRITICAL FOR KERAS 3 ISSUES)
+    # =========================
+    try:
+        model = tf.keras.models.load_model(
+            MODEL_PATH,
+            compile=False,
+            custom_objects={}
+        )
+        print("✅ Model loaded with fallback method")
 
-    prediction = model.predict(img_array)
-    class_index = np.argmax(prediction)
-    confidence = np.max(prediction)
-
-    return f"{classes[class_index]} ({confidence*100:.2f}%)"
-
-gr.Interface(
-    fn=predict_image,
-    inputs=gr.Image(type="pil"),
-    outputs="text",
-    title="🍎 Apple Disease Detection AI"
-).launch()
+    except Exception as e2:
+        print("❌ Fatal model load error:", e2)
+        raise e2
 
 
-# Read the port assigned by Render, or fallback to 7860 for local testing
-port = int(os.environ.get("PORT", 7860))
+# =========================
+# 4. SIMPLE PREDICTION FUNCTION (SAFE)
+# =========================
+from tensorflow.keras.preprocessing import image
+import numpy as np
 
-demo.launch(server_name="0.0.0.0", server_port=port)
+IMG_SIZE = (224, 224)
 
+def predict(img_path):
+    img = image.load_img(img_path, target_size=IMG_SIZE)
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = x / 255.0
+
+    preds = model.predict(x)
+    return preds
