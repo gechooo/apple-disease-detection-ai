@@ -9,8 +9,11 @@ import os
 # Load model
 import tensorflow as tf
 
+print("TensorFlow:", tf.__version__)
+print("Keras:", keras.__version__)
+
 model = tf.keras.models.load_model(
-    "model_fixex.h5",
+    "model_fixed.h5",
     compile=False
 )
 
