@@ -8,7 +8,7 @@ import os
 
 print("FILES IN DIRECTORY:")
 print(os.listdir("."))
-print("MODEL EXISTS:", os.path.exists("apple_model.keras"))
+print("MODEL EXISTS:", os.path.exists("apple_model.h5"))
 # =========================
 # CONFIG
 # =========================
@@ -37,7 +37,7 @@ print("Loaded classes:", idx_to_class)
 print("TensorFlow:", tf.__version__)
 print("Keras:", tf.keras.__version__)
 
-MODEL_PATH = "apple_model.keras"
+MODEL_PATH = "apple_model.h5"
 
 model = tf.keras.models.load_model(
     MODEL_PATH,
